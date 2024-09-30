@@ -10,8 +10,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
+interface eventPayload {
+    type: string,
+    data: {
+        id: number,
+        postId: number,
+        content: string,
+        status: string,
+        title: string
+    }
+}
+const events: eventPayload[] = [];
 app.post('/events', async (req: Request, res: Response) => {
     const event = req.body;
+
+
+    events.push(event);
 
     console.log("Event api called");
     
@@ -34,6 +48,11 @@ app.post('/events', async (req: Request, res: Response) => {
     // axios.post('http://localhost:4000/events', event);
 
     res.send({ status: "okay"})
+})
+
+app.get('/events', (req: Request, res: Response) => {
+    console.log("API IS CALLED");
+    res.send(events)
 })
 
 app.listen(4005, () => {

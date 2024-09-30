@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 // import { randomBytes } from 'crypto';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import axios from 'axios';
 
 
 const app = express();
@@ -12,23 +13,28 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/posts', (req: Request, res: Response) => {
-    res.send(posts)
-})
+interface dataPayload {
+    id: string,
+    content: string,
+    status: string,
+    title: string,
+    postId: number
+}
 
+interface commentInterface {
+    id?: string,
+    content?: string,
+    status?: string,
+    postId?: number
+}
 
-let posts: { [key: string]: { id: string, title: string, comments: { id: string, content: string, status: string }[] } } = {};
-
-app.post('/events', (req: Request, res: Response) => {
-
-    console.log(req.body, "%%%%%%%%%%%%%%%%%%")
-    const { type, data } = req.body;
-
+const handleEvent = (type: string, data: dataPayload) => {
     if (type === 'post_added') {
 
         console.log("Post is added@@@@@@@@@@@@@@@");
 
         const { id, title } = data;
+
         posts[id] = {
             id, title, comments: []
         };
@@ -56,9 +62,11 @@ app.post('/events', (req: Request, res: Response) => {
             id, content, status, postId
         } = data;
 
+        
+        //@ts-ignore
         const post = posts[postId];
         if (post) {
-            const comment = post.comments.find(comment => comment.id === id);
+            const comment = post.comments.find((comment: commentInterface) => comment.id === id);
             if (comment) {
                 comment.content = content;
                 comment.status = status;
@@ -73,16 +81,38 @@ app.post('/events', (req: Request, res: Response) => {
             console.error(`Post with id ${postId} not found.`);
         }
     }
+}
+app.get('/posts', (req: Request, res: Response) => {
+    res.send(posts)
+})
+
+
+let posts: { [key: string]: { id: string, title: string, comments: { id: string, content: string, status: string }[] } } = {};
 
 
 
+app.post('/events', (req: Request, res: Response) => {
 
-    console.log({ posts })
+    console.log(req.body, "%%%%%%%%%%%%%%%%%%")
+    const { type, data } = req.body;
+
+    handleEvent(type, data)
+
+
 
     res.send({});
 })
 
-app.listen(5000, () => {
+app.listen(5000, async () => {
     console.log('Queries running on 5000')
+
+
+    const res = await axios.get('http://localhost:4005/events');
+
+    for (let event of res.data) {
+
+        console.log(event.type, "Processing Events");
+        handleEvent(event.type, event.data);
+    }
 })
 export default app;
