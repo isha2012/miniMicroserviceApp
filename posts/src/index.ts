@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import { randomBytes } from 'crypto';
 import cors from 'cors';
-import http from 'http';
+// import http from 'http';
 
-import { Server } from 'socket.io';
+// import { Server } from 'socket.io';
+import axios from 'axios';
 
 // import bodyParser from 'body-parser';
 const app = express();
@@ -17,23 +18,26 @@ interface Post {
     title: string;
 }
 
-let posts: Post[] = [];
+let posts: { [key: string]: { id: string, title: string} } = {};
 
-const server = http.createServer(app);
 
-const io = new Server(server, {
-    cors: {
-      origin: "*", // React app's origin
-      methods: ["GET", "POST"],
-      credentials: true, // Allow credentials
-    }
-  });
+// const server = http.createServer(app);
+
+// const io = new Server(server, {
+//     cors: {
+//       origin: "*", // React app's origin
+//       methods: ["GET", "POST"],
+//       credentials: true, // Allow credentials
+//     }
+//   });
 
 app.get('/posts', (req: Request, res: Response) => {
     res.send(posts);
 })
 
-app.post('/posts', (req: Request, res: Response) => {
+app.post('/posts', async (req: Request, res: Response) => {
+
+
     const id = randomBytes(4).toString('hex');
 
     const {title} = req.body;
@@ -46,11 +50,17 @@ app.post('/posts', (req: Request, res: Response) => {
         id, title
     }
 
-    posts.push(newPost)
+    posts[id] = newPost
 
-    io.emit('postAdded', newPost);
+    //sending the event to the event-bus
+    await axios.post('http://localhost:4005/events', {
+      type: 'post_added',
+      data: newPost
+    })
 
-    console.log("Event EMitted");
+    // io.emit('postAdded', newPost);
+
+    // console.log("Event EMitted");
     
 
 
@@ -59,14 +69,21 @@ app.post('/posts', (req: Request, res: Response) => {
 
 
   // Socket.io connection
-io.on('connection', (socket) => {
-    console.log('New client connected', socket.id);
+// io.on('connection', (socket) => {
+//     console.log('New client connected', socket.id);
   
-    // Handle disconnection
-    socket.on('disconnect', () => {
-      console.log('Client disconnected');
-    });
-  });
+//     // Handle disconnection
+//     socket.on('disconnect', () => {
+//       console.log('Client disconnected');
+//     });
+//   });
+
+app.post('/events', (req: Request, res: Response) => {
+  console.log("Event Received", req.body.type);
+
+  res.send({})
+  
+})
   
 
 app.listen(3001, () => {
