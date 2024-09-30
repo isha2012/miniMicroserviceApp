@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CommentCreate from "./CommentCreate";
+import ListComments from "./ListComments";
 // import ListComments from "./ListComments";
 
 // import io  from 'socket.io-client';
@@ -49,6 +50,7 @@ const PostList = () => {
     // content: string;
   }
 
+
   const renderedPosts = Object.values(posts as Post[]).map((post: Post) => {
     return (
       // <div className=" card-group" >
@@ -56,11 +58,11 @@ const PostList = () => {
         <div className="card-body">
           <h3>{post.title}</h3>
           <div>
-          {post.comments.map((comment) => (
+          {/* {post.comments.map((comment) => (
             <li key={comment.id}>{comment.content}</li> 
-          ))}
+          ))} */}
 
-          {/* <ListComments postId={post.id} /> */}
+          <ListComments comments={post.comments} />
           <CommentCreate postId={post.id} />
         </div>
       </div>

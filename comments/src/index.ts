@@ -15,8 +15,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 interface commentsInterface {
     id: string;
     content: string;
+    status: "pending" | "approved" | "rejected";
 }
-const commentsByPostId: { [key: string]: [commentsInterface]} = {
+const commentsByPostId: { [key: string]: [commentsInterface] } = {
 
 }
 
@@ -24,8 +25,8 @@ app.get('/posts/:id/comments', (req: Request, res: Response) => {
     // res.send(posts);
 
     console.log(req.params.id);
-    
-    res.send(commentsByPostId[req.params.id] || []  )
+
+    res.send(commentsByPostId[req.params.id] || [])
 })
 
 app.post('/posts/:id/comments', async (req: Request, res: Response) => {
@@ -34,9 +35,9 @@ app.post('/posts/:id/comments', async (req: Request, res: Response) => {
     const { content } = req.body;
 
     const comments = commentsByPostId[req.params.id] || [];
-    
+
     comments.push({
-        id: commentId, content 
+        id: commentId, content, status: "pending"
     });
 
     commentsByPostId[req.params.id] = comments;
@@ -47,7 +48,7 @@ app.post('/posts/:id/comments', async (req: Request, res: Response) => {
         content,
         postId: req.params.id,
     }
-    
+
 
     try {
         await axios.post('http://localhost:4005/events', {
@@ -56,6 +57,7 @@ app.post('/posts/:id/comments', async (req: Request, res: Response) => {
                 id: commentId,
                 content,
                 postId: req.params.id,
+                status: "pending"
             }
         });
     } catch (error) {
@@ -65,9 +67,58 @@ app.post('/posts/:id/comments', async (req: Request, res: Response) => {
     res.status(201).send(comments);
 });
 
-app.post("/events", (req: Request, res: Response) => {
+app.post("/events", async (req: Request, res: Response) => {
+
+
+    const { type, data } = req.body;
+
+    if (type === 'comment_moderated') {
+
+        console.log("in comment actual service updating the actula event");
+        
+        const { postId, id, content, status } = data;
+
+        console.log(status, "@@@@@@@@@@@@@@@@");
+        
+        const comments = commentsByPostId[postId];
+        // comment.status = status;
+
+        const comment = comments.find(comment => {
+            return comment.id === id
+        }
+
+        )
+
+        if(comment) {
+            comment.status = status;
+        } else {
+            console.error(`Comment with id ${id} not found.`);
+            return;
+        }
+
+
+        console.log(comment, "commented updated in actual folder");
+        
+
+        try {
+            await axios.post('http:localhost:4005/events', {
+                type: "comment_updated",
+                data: {
+                    id, content, postId, status
+                }
+            })
+        } catch(error) {
+            console.log("Error in comment Updated", error)
+        }
+
+      
+
+       
+    }
+
     console.log("Comments Event triggered", req.body.type);
-    res.send({  })
+
+    res.send({})
 
 })
 
