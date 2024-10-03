@@ -87,6 +87,8 @@ app.post('/events', (req: Request, res: Response) => {
   
 
 app.listen(3001, () => {
+  console.log("Adding deployments");
+  
     console.log('Posts running on 3001')
 })
 export default app;
