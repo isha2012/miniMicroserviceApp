@@ -1,0 +1,36 @@
+#depl --> deployment..
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: query-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: query
+  template: 
+    metadata:
+      labels:
+        app: query
+    spec:
+      containers:
+      - name: query
+        image: isha7876/query:latest #if we dont put the latest docker assumes ( by default) latest
+        # ports:
+        # - containerPort: 8080
+
+---
+
+#for cluster Ip address.
+apiVersion: v1
+kind: Service
+metadata:
+  name: query-srv
+spec:
+  selector:
+    app: query
+  ports:
+    - protocol: TCP
+      port: 7000
+      targetPort: 5000
