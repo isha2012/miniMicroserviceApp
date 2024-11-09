@@ -16,5 +16,9 @@
     "event-bus": "file:",
     "express": "^4.21.0",
     "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
   }
 }

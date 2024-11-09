@@ -23,6 +23,7 @@
     "post": "file:"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0"
+    "@types/express": "^5.0.0",
+    "ts-node": "^10.9.2"
   }
 }

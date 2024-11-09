@@ -1,0 +1,36 @@
+#depl --> deployment..
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moderations-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moderations
+  template: 
+    metadata:
+      labels:
+        app: moderations
+    spec:
+      containers:
+      - name: moderations
+        image: isha7876/moderations:latest #if we dont put the latest docker assumes ( by default) latest
+        # ports:
+        # - containerPort: 8080
+
+---
+
+#for cluster Ip address.
+apiVersion: v1
+kind: Service
+metadata:
+  name: moderations-srv
+spec:
+  selector:
+    app: moderations
+  ports:
+    - protocol: TCP
+      port: 6003
+      targetPort: 3003

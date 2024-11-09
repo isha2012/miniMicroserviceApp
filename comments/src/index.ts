@@ -51,7 +51,7 @@ app.post('/posts/:id/comments', async (req: Request, res: Response) => {
 
 
     try {
-        await axios.post('http://localhost:4005/events', {
+        await axios.post('http://event-bus-srv:6005/events', {
             type: "comment_added",
             data: {
                 id: commentId,
@@ -101,7 +101,8 @@ app.post("/events", async (req: Request, res: Response) => {
         
 
         try {
-            await axios.post('http:localhost:4005/events', {
+            // await axios.post('http:localhost:4005/events', {
+            await axios.post('http://event-bus-srv:6005/events', {
                 type: "comment_updated",
                 data: {
                     id, content, postId, status

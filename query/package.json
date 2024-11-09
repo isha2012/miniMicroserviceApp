@@ -19,6 +19,7 @@
     "query": "file:"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17"
+    "@types/cors": "^2.8.17",
+    "ts-node": "^10.9.2"
   }
 }

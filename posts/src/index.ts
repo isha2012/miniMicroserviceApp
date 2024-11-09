@@ -36,7 +36,8 @@ app.get('/posts', (req: Request, res: Response) => {
 })
 
 app.post('/posts', async (req: Request, res: Response) => {
-
+  console.log("API HITTTTT");
+  
 
     const id = randomBytes(4).toString('hex');
 
@@ -53,7 +54,8 @@ app.post('/posts', async (req: Request, res: Response) => {
     posts[id] = newPost
 
     //sending the event to the event-bus
-    await axios.post('http://localhost:4005/events', {
+    await axios.post('http://event-bus-srv:6005/events', {
+    // await axios.post('http://10.102.136.254:6005/events', {
       type: 'post_added',
       data: newPost
     })

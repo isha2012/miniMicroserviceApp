@@ -1,0 +1,36 @@
+#depl --> deployment..
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: comments-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: comments
+  template: 
+    metadata:
+      labels:
+        app: comments
+    spec:
+      containers:
+      - name: comments
+        image: isha7876/comments:latest #if we dont put the latest docker assumes ( by default) latest
+        # ports:
+        # - containerPort: 8080
+
+---
+
+#for cluster Ip address.
+apiVersion: v1
+kind: Service
+metadata:
+  name: comments-srv
+spec:
+  selector:
+    app: comments
+  ports:
+    - protocol: TCP
+      port: 6002
+      targetPort: 3002

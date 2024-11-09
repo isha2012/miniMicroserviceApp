@@ -14,9 +14,6 @@ app.post('/events', async (req:Request, res: Response) => {
     const {
         type, data
     } = req.body;
-
-
-    console.log("In the moderation function #################");
     
 
     if(type === "comment_added") {
@@ -36,7 +33,7 @@ app.post('/events', async (req:Request, res: Response) => {
         // console.log( data.content.includes('orange'), "######sttaus updated");
         
 
-        await axios.post('http://localhost:4005/events', {
+        await axios.post('http://event-bus-srv:6005/events', {
             type: 'comment_moderated',
             data: {
                 id: data.id,

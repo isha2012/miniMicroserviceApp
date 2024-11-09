@@ -31,21 +31,22 @@ app.post('/events', async (req: Request, res: Response) => {
     
 
     //post events
-    await axios.post('http://localhost:3001/events', event);
+    // await axios.post('http://posts-clusterip-srv:6000/events', event);
+    await axios.post('http://10.111.117.89:6000/events', event);
     console.log(event, "Event api called for post");
     
-    //comment events
-    await axios.post('http://localhost:3002/events', event);
+    // comment events
+    // await axios.post('http://localhost:3002/events', event);
+    await axios.post('http://comments-srv:6002/events', event);
     console.log(event, "Event api   called for comment");
 
     //query service
-    await axios.post('http://localhost:5000/events', event);
+    await axios.post('http://query-srv:7000/events', event);
     console.log(event, "Event api called for query");
 
-    await axios.post('http://localhost:3003/events', event);
+    await axios.post('http://moderations-srv:6003/events', event);
     console.log(event, "Event api   called for comment Moderation");
     
-    // axios.post('http://localhost:4000/events', event);
 
     res.send({ status: "okay"})
 })

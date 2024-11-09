@@ -107,7 +107,7 @@ app.listen(5000, async () => {
     console.log('Queries running on 5000')
 
 
-    const res = await axios.get('http://localhost:4005/events');
+    const res = await axios.get('http://event-bus-srv:6005/events');
 
     for (let event of res.data) {
 
